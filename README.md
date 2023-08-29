@@ -1,0 +1,5 @@
+# MusicXML
+
+## License
+
+[MIT](./LICENSE)
