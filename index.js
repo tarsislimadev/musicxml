@@ -1,3 +1,3 @@
-const { Note, Measure, MusicXML, } = require('./src/MusicXML.js')
+const { Note, Measure, MusicXML, NotePitch } = require('./src/MusicXML.js')
 
-module.exports = { Note, Measure, MusicXML, }
+module.exports = { Note, Measure, MusicXML, NotePitch }

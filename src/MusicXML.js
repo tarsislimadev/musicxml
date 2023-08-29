@@ -1,18 +1,71 @@
 const fs = require('fs')
 
-class Note {
-  divisions = 1
-  duration = 1
-  type = 'eighth'
-  stem = 'down'
-  voice = 1
-  pitch = {
-    step: 'D',
-    octave: '4',
+class NoteType {
+  type = 1
+
+  constructor(type = 1) {
+    this.type = type
   }
 
-  setDivisions(divisions = 1) {
+  getTypeText() {
+    switch (this.type) {
+      case 1: return 'whole'
+      case 2: return 'half'
+      case 4: return 'quarter'
+      case 8: return 'eighth'
+    }
+  }
+}
+
+class NoteStem {
+  text = 'down'
+
+  constructor(stem = 0) {
+    const stems = ['down', 'up',]
+    this.text = stems[stem]
+  }
+}
+
+class NotePitch {
+  step = 'A'
+  octave = '5'
+
+  constructor(step, octave) {
+    this.step = step
+    this.octave = octave
+  }
+}
+
+class Note {
+  divisions = 3840
+  duration = 3840
+  voice = 1
+  pitch = new NotePitch('A', '5')
+  type = new NoteType(1)
+  stem = new NoteStem()
+
+  setDivisions(divisions = 3840) {
     this.divisions = divisions
+    return this
+  }
+
+  setDuration(duration = 1) {
+    this.duration = duration
+    return this
+  }
+
+  setType(type = new NoteType(1)) {
+    this.type = type
+    return this
+  }
+
+  setStem(stem = new NoteStem(1)) {
+    this.stem = stem
+    return this
+  }
+
+  setPitch(pitch = new NotePitch('A', '4')) {
+    this.pitch = pitch
     return this
   }
 
@@ -24,11 +77,7 @@ class Note {
     lines.push(`    <step>${this.pitch.step}</step>`)
     lines.push(`    <octave>${this.pitch.octave}</octave>`)
     lines.push(`  </pitch>`)
-    lines.push(`  <duration>1</duration>`)
-    // lines.push(`  <duration>${this.duration / this.divisions}</duration>`)
-    lines.push(`  <voice>${this.voice}</voice>`)
-    lines.push(`  <type>${this.type}</type>`)
-    lines.push(`  <stem>${this.stem}</stem>`)
+    lines.push(`  <duration>${this.duration}</duration>`)
     lines.push(`</note>`)
 
     return lines.join('\n')
@@ -37,15 +86,15 @@ class Note {
 
 class Measure {
   divisions = 3840
-  tempo = 100
+  tempo = 120
   notes = []
 
-  setTempo(tempo = 100) {
+  setTempo(tempo = 120) {
     this.tempo = tempo
     return this
   }
 
-  setDivisions(divisions = 100) {
+  setDivisions(divisions = 3840) {
     this.divisions = divisions
     return this
   }
@@ -67,8 +116,8 @@ class Measure {
 
 class MusicXML {
   measures = []
-  tempo = 100
-  divisions = 100
+  tempo = 120
+  divisions = 3840
   key = {
     fifths: 0,
     mode: 'none',
@@ -100,6 +149,24 @@ class MusicXML {
     lines.push('<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">')
     lines.push('<score-partwise version="3.1">')
     lines.push('  <movement-title>makemusic</movement-title>')
+
+    this.getDefaults().map((line) => lines.push(line))
+
+    this.getPartList().map((line) => lines.push(line))
+
+    lines.push('<part id="P1">')
+    this.getAttributes().map((line) => lines.push(line))
+    this.measures.map((m) => lines.push(m.toXML()))
+    lines.push('</part>')
+
+    lines.push('</score-partwise>')
+
+    return lines.join('\n')
+  }
+
+  getDefaults() {
+    const lines = []
+
     lines.push('  <defaults>')
     lines.push('    <scaling>')
     lines.push('      <millimeters>6.5000</millimeters>')
@@ -127,6 +194,13 @@ class MusicXML {
     lines.push('      <note-size type="grace">50</note-size>')
     lines.push('    </appearance>')
     lines.push('  </defaults>')
+
+    return lines
+  }
+
+  getPartList() {
+    const lines = []
+
     lines.push('  <part-list>')
     lines.push('    <score-part id="P1">')
     lines.push('      <part-name print-object="no">Music</part-name>')
@@ -142,7 +216,11 @@ class MusicXML {
     lines.push('    </score-part>')
     lines.push('  </part-list>')
 
-    lines.push('<part id="P1">')
+    return lines
+  }
+
+  getAttributes() {
+    const lines = []
 
     lines.push(`<measure>`)
     lines.push(`  <attributes>`)
@@ -160,15 +238,10 @@ class MusicXML {
     lines.push(`      <line>${this.clef.line}</line>`)
     lines.push(`    </clef>`)
     lines.push(`  </attributes>`)
-    lines.push(`  <sound tempo="${this.tempo}" />`)
+    lines.push(`  <sound tempo="${this.tempo}"/>`)
     lines.push(`</measure>`)
 
-    this.measures.map((m) => lines.push(m.toXML()))
-    lines.push('</part>')
-
-    lines.push('</score-partwise>')
-
-    return lines.join('\n')
+    return lines
   }
 
   writeFile(filename) {
@@ -178,6 +251,9 @@ class MusicXML {
 }
 
 module.exports = {
+  NoteType,
+  NoteStem,
+  NotePitch,
   Note,
   Measure,
   MusicXML,
