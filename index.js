@@ -1,1 +1,3 @@
-require('./src/MusicXML.js')
+const { MusicXML } = require('./src/MusicXML.js')
+
+module.exports = { MusicXML }
