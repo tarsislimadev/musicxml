@@ -1,4 +1,4 @@
-const { MusicXML, EncodingDate } = require('../src/MusicXML.v1.js')
+const { MusicXML, EncodingDate } = require('../src/index.js')
 
 const music = new MusicXML()
 
