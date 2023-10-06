@@ -1,4 +1,4 @@
-# @brtmvdl/musicxml
+# [@brtmvdl/musicxml](https://github.com/brtmvdl/musicxml)
 
 Easy MusicXML Node.js library
 
