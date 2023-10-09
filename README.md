@@ -11,6 +11,8 @@ Easy MusicXML Node.js library
 ## install
 
 ```bash
+# bash
+
 npm i @brtmvdl/musicxml
 ```
 
